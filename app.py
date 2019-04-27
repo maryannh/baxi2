@@ -2,13 +2,10 @@ from flask import Flask, render_template
 from flask_simplelogin import SimpleLogin, is_logged_in, login_required
 from pymongo import MongoClient
 from forms import join
-from functions import get_user
+from werkzeug.security import check_password_hash, generate_password_hash 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'something-secret'
-app.config['SIMPLELOGIN_USERNAME'] = 'chuck'
-app.config['SIMPLELOGIN_PASSWORD'] = 'norris'
-
 
 client = MongoClient("mongodb+srv://maryann:3j69q28gzRCbJxwo@cluster1-pdojm.mongodb.net/test?retryWrites=true")
 db = client.dandelion
@@ -22,9 +19,20 @@ def index():
 @app.route('/join', methods=('GET', 'POST'))
 def join(): 
     form = join()
-    users = get_users()
-    # get list of users to user in validator
     if form.validate_on_submit():
+        # get form data
+        username = form.username.data
+        learner_name = form.learner_name.data
+        email = form.email.data
+        hashed_password = generate_password_hash(form.password.data)
+        # add form data to database
+        info = {
+            "username": username,
+            "password": hashed_password,
+            "email": email,
+            "learner_name": learner_name
+        }
+        db.users.insert(info)
         return redirect('/dashboard')
     return render_template('join.html', users=users, form=form)
 
