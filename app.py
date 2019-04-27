@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 from flask_simplelogin import SimpleLogin, is_logged_in, login_required
 from pymongo import MongoClient
-from forms import join
+from forms import JoinForm
 from werkzeug.security import check_password_hash, generate_password_hash 
 
 app = Flask(__name__)
@@ -18,7 +18,7 @@ def index():
 
 @app.route('/join', methods=('GET', 'POST'))
 def join(): 
-    form = join()
+    form = JoinForm()
     if form.validate_on_submit():
         # get form data
         username = form.username.data
@@ -32,9 +32,10 @@ def join():
             "email": email,
             "learner_name": learner_name
         }
-        db.users.insert(info)
-        return redirect('/dashboard')
-    return render_template('join.html', users=users, form=form)
+        user_id = db.users.insert_one(info).inserted_id
+        redirect_url = "/dashboard/" + user_id
+        return redirect(redirect_url)
+    return render_template('join.html', form=form)
 
 @app.route('/dashboard/<user>')
 @login_required
