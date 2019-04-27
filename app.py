@@ -2,6 +2,7 @@ from flask import Flask, render_template
 from flask_simplelogin import SimpleLogin, is_logged_in, login_required
 from pymongo import MongoClient
 from forms import join
+from functions import get_user
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'something-secret'
@@ -21,8 +22,8 @@ def index():
 @app.route('/join', methods=('GET', 'POST'))
 def join(): 
     form = join()
+    users = get_users()
     # get list of users to user in validator
-    users = db.users.find()
     if form.validate_on_submit():
         return redirect('/dashboard')
     return render_template('join.html', users=users, form=form)
