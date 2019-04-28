@@ -10,6 +10,7 @@ title
 
 
 <form action="/join" method="post">
+    {{ form.csrf_token }}
 <div class="username">{{form.username.label}}<br>
           {{ form.username }}</div>
     

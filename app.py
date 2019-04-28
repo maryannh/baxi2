@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect
 from flask_simplelogin import SimpleLogin, is_logged_in, login_required
 from pymongo import MongoClient
 from forms import JoinForm
@@ -30,11 +30,15 @@ def join():
             "username": username,
             "password": hashed_password,
             "email": email,
-            "learner_name": learner_name
+            "learner_name": learner_name,
         }
         user_id = db.users.insert_one(info).inserted_id
-        redirect_url = "/dashboard/" + user_id
+        redirect_url = "/dashboard/" + str(user_id)
         return redirect(redirect_url)
+    else:
+        # add what happens if it doesn't validate
+        for item in form.errors.items():
+            print(item)
     return render_template('join.html', form=form)
 
 @app.route('/dashboard/<user>')
