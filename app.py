@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, session
 from flask_simplelogin import SimpleLogin, is_logged_in, login_required
 from pymongo import MongoClient
 from forms import JoinForm
@@ -33,6 +33,7 @@ def join():
             "learner_name": learner_name,
         }
         user_id = db.users.insert_one(info).inserted_id
+        session["username"] = form.username.data
         redirect_url = "/dashboard/" + str(user_id)
         return redirect(redirect_url)
     else:
@@ -41,20 +42,20 @@ def join():
             print(item)
     return render_template('join.html', form=form)
 
-@app.route('/dashboard/<user>')
+@app.route('/dashboard/<user_id>')
 @login_required
-def dashboard(user):
-    return render_template('dashboard.html', user=user)
+def dashboard(user_id):
+    return render_template('dashboard.html', user_id=user_id)
 
-@app.route('/settings/<user>')
+@app.route('/settings/<user_id>')
 @login_required
-def settings(user):
-    return render_template('settings.html', user=user)
+def settings(user_id):
+    return render_template('settings.html', user_id=user_id)
 
-@app.route('/add_content/<user>')
+@app.route('/add_content/<user_id>')
 @login_required
-def add_content(user):
-    return render_template('add_content.html', user=user)
+def add_content(user_id):
+    return render_template('add_content.html', user_id=user_id)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

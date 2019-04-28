@@ -1,3 +1,15 @@
+/* FORMS */
+
+small.error {
+    color: red;
+}
+
+form h4 {
+    margin-top: 1em;
+}
+
+/* registration */
+
 button.register {
     margin-top: 10px;
 }

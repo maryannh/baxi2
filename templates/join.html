@@ -4,23 +4,51 @@
 
 title
 {% endblock %}
+
+{% block messages %}
+
+   {%if form.errors %}
+     <ul class="alert alert-danger">
+       {% for field, errors in form.errors.items() %}
+         <li>{{field}} {% for error in errors %}{{ error }}{% endfor %}</li>
+       {% endfor %}
+     </ul>
+   {% endif %}
+
+{% endblock %}
+
 {% block content %}
 
 <h1>Join the App</h1>
 
 
+
+
 <form action="/join" method="post">
     {{ form.csrf_token }}
-<div class="username">{{form.username.label}}<br>
-          {{ form.username }}</div>
+<div class="username"><h4>{{form.username.label}}</h4>
+          {{ form.username }}
+    <br>
+    {% if form.username.errors %}
+        {% for error in form.username.errors %}<small class="error">{{ error }}</small>{% endfor %}
+    {% endif %}
+    </div>
     
-      <div class="password">{{form.password.label}}<br> {{ form.password }}</div>
+      <div class="password"><h4>{{form.password.label}}</h4> {{ form.password }}<br>
+    {% if form.password.errors %}
+        {% for error in form.password.errors %}<small class="error">{{ error }}</small>{% endfor %}
+    {% endif %}</div>
     
     <!-- remove this if it's not an educational app -->
-    <div class="learner_name">{{form.learner_name.label}}<br>
-          {{ form.learner_name }}</div>
+    <div class="learner_name"><h4>{{form.learner_name.label}}</h4>
+          {{ form.learner_name }}<br>
+    {% if form.learner_name.errors %}
+        {% for error in form.learner_name.errors %}<small class="error">{{ error }}</small>{% endfor %}
+    {% endif %}</div>
     
-      <div class="email">{{form.email.label}}<br> {{ form.email }}</div>
+      <div class="email"><h4>{{form.email.label}}</h4> {{ form.email }}<br>{% if form.email.errors %}
+        {% for error in form.email.errors %}<small class="error">{{ error }}</small>{% endfor %}
+    {% endif %}</div>
     
      <button class="btn btn-lg btn-primary btn-block register" type="submit">Register</button>
 </form>
