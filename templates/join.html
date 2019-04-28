@@ -5,21 +5,14 @@
 title
 {% endblock %}
 
-{% block messages %}
-
-   {%if form.errors %}
-     <ul class="alert alert-danger">
-       {% for field, errors in form.errors.items() %}
-         <li>{{field}} {% for error in errors %}{{ error }}{% endfor %}</li>
-       {% endfor %}
-     </ul>
-   {% endif %}
-
+{% block header %}
+<h1>Join the app</h1>
 {% endblock %}
+
 
 {% block content %}
 
-<h1>Join the App</h1>
+
 
 
 

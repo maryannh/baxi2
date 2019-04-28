@@ -8,8 +8,6 @@ form h4 {
     margin-top: 1em;
 }
 
-/* registration */
-
-button.register {
+button.register, button.login {
     margin-top: 10px;
 }

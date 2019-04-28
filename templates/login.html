@@ -2,39 +2,32 @@
 
 {% block title %}
 Login
+{% endblock %}
 
+{% block header %}
+<h1>Sign in </h1>
 {% endblock %}
-{% block bodyclass %}class="text-center"{% endblock %}
-{% block messages %}
-   {{super()}}
-   {%if form.errors %}
-     <ul class="alert alert-danger">
-       {% for field, errors in form.errors.items() %}
-         <li>{{field}} {% for error in errors %}{{ error }}{% endfor %}</li>
-       {% endfor %}
-     </ul>
-   {% endif %}
-{% endblock %}
+
 {% block content %}
 
+
 <form class="form-signin" action="{{ url_for('simplelogin.login') }}" method="post">
+   
     {{ form.csrf_token }}
-      <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+<div class="username"><h4>{{form.username.label}}</h4>
+          {{ form.username }}
+    <br>
+    {% if form.username.errors %}
+        {% for error in form.username.errors %}<small class="error">{{ error }}</small>{% endfor %}
+    {% endif %}
+    </div>
     
-      
-      <div class="form-control">{{form.username.label}}<br>
-          {{ form.username }}</div>
-    
-      <div class="form-control">{{form.password.label}}<br> {{ form.password }}</div>
-    
-      <div class="checkbox mb-3">
-        <label>
-          <input type="checkbox" value="remember-me"> Remember me
-        </label>
-      </div>
-    
-      <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-      
-    </form>
+      <div class="password"><h4>{{form.password.label}}</h4> {{ form.password }}<br>
+    {% if form.password.errors %}
+        {% for error in form.password.errors %}<small class="error">{{ error }}</small>{% endfor %}
+    {% endif %}</div>
+     <button class="btn btn-lg btn-primary btn-block login" type="submit">Sign in</button>
+</form>
+
 
 {% endblock %}

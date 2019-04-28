@@ -1,7 +1,7 @@
-from flask import Flask, render_template, redirect, session
+from flask import Flask, render_template, redirect, session, flash
 from flask_simplelogin import SimpleLogin, is_logged_in, login_required
 from pymongo import MongoClient
-from forms import JoinForm
+from forms import JoinForm, LoginForm
 from werkzeug.security import check_password_hash, generate_password_hash 
 
 app = Flask(__name__)
@@ -34,28 +34,52 @@ def join():
         }
         user_id = db.users.insert_one(info).inserted_id
         session["username"] = form.username.data
-        redirect_url = "/dashboard/" + str(user_id)
-        return redirect(redirect_url)
+        print(session["username"])
+        return redirect('/dashboard/')
     else:
         # add what happens if it doesn't validate
         for item in form.errors.items():
             print(item)
     return render_template('join.html', form=form)
 
-@app.route('/dashboard/<user_id>')
-@login_required
-def dashboard(user_id):
-    return render_template('dashboard.html', user_id=user_id)
+@app.route('/login/', methods=('GET', 'POST'))
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        # get form data
+        # check password
+        password = form.password.data
+        username = form.username.data
+        user_info = db.users.find_one({"username": username})
+        hashed_password = user_info["password"]
+        if check_password_hash(password, hashed_password):
+            # add user to session and redirect to dashboard
+            session['username'] = username
+            flash('You have successfully logged in')
+            return redirect("/dashboard/")
+        else:
+            # add what happens if passwords don't match
+            flash('Please check your password and try again')
+            return redirect("/login/")
+    else:
+        # add what happens if it doesn't validate
+    return render_template('login.html')
 
-@app.route('/settings/<user_id>')
-@login_required
-def settings(user_id):
-    return render_template('settings.html', user_id=user_id)
+@app.route('/dashboard/')
+def dashboard():
+    username = session['username']
+    # add what happens if a user ends up here with no username in their session
+    if username == None:
+        return redirect("/login/")
+    return render_template('dashboard.html', username=username)
 
-@app.route('/add_content/<user_id>')
-@login_required
-def add_content(user_id):
-    return render_template('add_content.html', user_id=user_id)
+@app.route('/settings/')
+def settings():
+    return render_template('settings.html')
+
+@app.route('/add_content/')
+def add_content():
+    return render_template('add_content.html')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
