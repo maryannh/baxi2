@@ -11,7 +11,7 @@ Login
 {% block content %}
 
 
-<form class="form-signin" action="{{ url_for('simplelogin.login') }}" method="post">
+<form class="form-signin" action="/login" method="POST">
    
     {{ form.csrf_token }}
 <div class="username"><h4>{{form.username.label}}</h4>

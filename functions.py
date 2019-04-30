@@ -12,3 +12,12 @@ def get_users():
         username = user['username']
         user_list.append(username)
     return user_list
+
+def get_user_emails():
+    # get list of emails with no other info
+    emails = db.users.find({}, {"email": 1, "_id": 0})
+    email_list = []
+    for email in emails: 
+        email_address = email['email']
+        email_list.append(email_address)
+    return email_list
