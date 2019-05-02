@@ -10,24 +10,7 @@ Login
 
 {% block content %}
 
-
-<form class="form-signin" action="/login" method="POST">
-   
-    {{ form.csrf_token }}
-<div class="username"><h4>{{form.username.label}}</h4>
-          {{ form.username }}
-    <br>
-    {% if form.username.errors %}
-        {% for error in form.username.errors %}<small class="error">{{ error }}</small>{% endfor %}
-    {% endif %}
-    </div>
-    
-      <div class="password"><h4>{{form.password.label}}</h4> {{ form.password }}<br>
-    {% if form.password.errors %}
-        {% for error in form.password.errors %}<small class="error">{{ error }}</small>{% endfor %}
-    {% endif %}</div>
-     <button class="btn btn-lg btn-primary btn-block login" type="submit">Sign in</button>
-</form>
+{{ render_form(form) }}
 
 
 {% endblock %}

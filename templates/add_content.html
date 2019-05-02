@@ -1,13 +1,16 @@
 {% extends "base.html" %}
 
 {% block title %}
+Add Content
+{% endblock %}
 
-title
-{% endblock %}
 {% block header %}
-<h1>Header</h1>
+<h1>Add Content</h1>
 {% endblock %}
+
 {% block content %}
 
-<h1>Add Content for {{user}}</h1>
+{{ render_form(form) }}
+
+
 {% endblock %}

@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from forms import JoinForm, LoginForm
 from werkzeug.security import check_password_hash, generate_password_hash 
 from flask_mail import Mail, Message
+from flask_bootstrap import Bootstrap
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'bollocks-to-eu'
@@ -16,6 +17,7 @@ client = MongoClient("mongodb+srv://maryann:3j69q28gzRCbJxwo@cluster1-pdojm.mong
 db = client.dandelion
 
 mail = Mail(app)
+bootstrap = Bootstrap(app)
 
 @app.route('/')
 def index():
@@ -102,6 +104,13 @@ def settings():
 
 @app.route('/add_content')
 def add_content():
+    form = ContentForm()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            # get form data
+            # add other data
+            # add to db
+            # return to add content page
     return render_template('add_content.html')
 
 if __name__ == '__main__':
