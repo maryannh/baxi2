@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, session, flash, request
 from pymongo import MongoClient
-from forms import JoinForm, LoginForm
+from forms import JoinForm, LoginForm, ContentForm
 from werkzeug.security import check_password_hash, generate_password_hash 
 from flask_mail import Mail, Message
 from flask_bootstrap import Bootstrap
@@ -102,6 +102,19 @@ def dashboard():
 
 @app.route('/settings')
 def settings():
+    form = SettingsForm()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            # get form data
+            test = form.test.data
+            # add to db
+            info = {
+                'test': test,
+            }
+            db.users.insert_one(info)
+            # return to add content page
+            flash("Settings updated")
+            return redirect("/dashboard")
     return render_template('settings.html')
 
 @app.route('/add_content')
@@ -123,6 +136,8 @@ def add_content():
             }
             db.content.insert_one(info)
             # return to add content page
+            message = '"' + title + '" added successfully'
+            flash(message)
             return redirect("/add_content")
     return render_template('add_content.html')
 

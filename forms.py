@@ -17,6 +17,10 @@ class LoginForm(FlaskForm):
     
 class ContentForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()]) 
-    content = StringField('Content', validators=[DataRequired()])StringField()
+    content = StringField('Content', validators=[DataRequired()])
     category = StringField('Category', validators=[DataRequired()])
     submit = SubmitField(label='Add Content')
+    
+class SettingsForm(FlaskForm):
+    test = StringField('Test', validators=[DataRequired()])
+    submit = SubmitField(label='Update Settings')
