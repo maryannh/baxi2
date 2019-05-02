@@ -4,6 +4,7 @@ from forms import JoinForm, LoginForm
 from werkzeug.security import check_password_hash, generate_password_hash 
 from flask_mail import Mail, Message
 from flask_bootstrap import Bootstrap
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'bollocks-to-eu'
@@ -39,6 +40,7 @@ def join():
                 "password": hashed_password,
                 "email": email,
                 "learner_name": learner_name,
+                'added': datetime.utcnow(),
             }
             db.users.insert_one(info)
             # send email confirmation
@@ -108,9 +110,20 @@ def add_content():
     if request.method == 'POST':
         if form.validate_on_submit():
             # get form data
-            # add other data
+            title = form.title.data
+            content = form.content.data
+            category = form.category.data
             # add to db
+            info = {
+                'title': title,
+                'content': content,
+                'category': category,
+                'added': datetime.utcnow(),
+                'user': session['username'],
+            }
+            db.content.insert_one(info)
             # return to add content page
+            return redirect("/add_content")
     return render_template('add_content.html')
 
 if __name__ == '__main__':
