@@ -2,12 +2,16 @@ from flask import Flask, render_template, redirect, session, flash, request
 from pymongo import MongoClient
 from forms import JoinForm, LoginForm
 from werkzeug.security import check_password_hash, generate_password_hash 
+from flask_mail import Mail, Message
+from functions import send_email
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'bollocks-to-eu'
 
 client = MongoClient("mongodb+srv://maryann:3j69q28gzRCbJxwo@cluster1-pdojm.mongodb.net/test?retryWrites=true")
 db = client.dandelion
+
+mail = Mail(app)
 
 @app.route('/')
 def index():
@@ -25,14 +29,25 @@ def join():
             hashed_password = generate_password_hash(form.password.data)
             # add form data to database
             info = {
-            "username": username,
-            "password": hashed_password,
-            "email": email,
-            "learner_name": learner_name,
+                "username": username,
+                "password": hashed_password,
+                "email": email,
+                "learner_name": learner_name,
             }
             user_id = db.users.insert_one(info).inserted_id
-            session["username"] = form.username.data
-            print(session["username"])
+            # send email confirmation
+            subject = "Thanks for joining our app"
+            recipients = email
+            body = "Test email body"
+            sender = "maryann.horley@gmail.com"
+            send_email(subject, sender, recipients, body)
+            # add info to session
+            session["email"] = email
+            session["username"] = username
+            session["user_id"] = user_id
+            session["learner_name"] = learner_name
+            # flash message
+            flash('You have successfully registered and logged in')
             return redirect('/dashboard')
         else:
             # add what happens if it doesn't validate
