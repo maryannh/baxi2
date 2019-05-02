@@ -3,10 +3,14 @@ from pymongo import MongoClient
 from forms import JoinForm, LoginForm
 from werkzeug.security import check_password_hash, generate_password_hash 
 from flask_mail import Mail, Message
-from functions import send_email
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'bollocks-to-eu'
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'maryann.horley@gmail.com'
+app.config['MAIL_PASSWORD'] = 'ferrari1357'
 
 client = MongoClient("mongodb+srv://maryann:3j69q28gzRCbJxwo@cluster1-pdojm.mongodb.net/test?retryWrites=true")
 db = client.dandelion
@@ -34,17 +38,14 @@ def join():
                 "email": email,
                 "learner_name": learner_name,
             }
-            user_id = db.users.insert_one(info).inserted_id
+            db.users.insert_one(info)
             # send email confirmation
-            subject = "Thanks for joining our app"
-            recipients = email
-            body = "Test email body"
-            sender = "maryann.horley@gmail.com"
-            send_email(subject, sender, recipients, body)
+            msg = Message("Thanks for joining our app", sender="maryann.horley@gmail.com", recipients=[email])
+            msg.body = "testing"
+            mail.send(msg)
             # add info to session
             session["email"] = email
             session["username"] = username
-            session["user_id"] = user_id
             session["learner_name"] = learner_name
             # flash message
             flash('You have successfully registered and logged in')

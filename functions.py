@@ -1,6 +1,5 @@
 from pymongo import MongoClient
 from werkzeug.security import check_password_hash, generate_password_hash 
-from flask_mail import Mail, Message
 
 client = MongoClient("mongodb+srv://maryann:3j69q28gzRCbJxwo@cluster1-pdojm.mongodb.net/test?retryWrites=true")
 db = client.dandelion
@@ -22,8 +21,3 @@ def get_user_emails():
         email_address = email['email']
         email_list.append(email_address)
     return email_list
-
-def send_email(subject, sender, recipients, body):
-    msg = Message(subject, sender=sender, recipients=recipients)
-    msg.body = body
-    mail.send(msg)
