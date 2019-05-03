@@ -7,14 +7,9 @@ from flask_bootstrap import Bootstrap
 from datetime import datetime
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'bollocks-to-eu'
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'maryann.horley@gmail.com'
-app.config['MAIL_PASSWORD'] = 'ferrari1357'
+app.config.from_pyfile('settings.cfg')
 
-client = MongoClient("mongodb+srv://maryann:3j69q28gzRCbJxwo@cluster1-pdojm.mongodb.net/test?retryWrites=true")
+client = MongoClient(app.config.get('MONGO_URI'))
 db = client.dandelion
 
 mail = Mail(app)
@@ -44,7 +39,7 @@ def join():
             }
             db.users.insert_one(info)
             # send email confirmation
-            msg = Message("Thanks for joining our app", sender="maryann.horley@gmail.com", recipients=[email])
+            msg = Message("Thanks for joining our app", sender=app.config.get('SENDER'), recipients=[email])
             msg.body = "testing"
             mail.send(msg)
             # add info to session
