@@ -99,10 +99,15 @@ def settings():
             # get form data
             test = form.test.data
             # add to db
-            info = {
+            info = { "settings": {
                 'test': test,
             }
-            db.users.insert_one(info)
+            }
+            db.users.update_one({
+                "username": session['username']
+            }, {
+                "$set": info
+            })
             # return to add content page
             flash("Settings updated")
             return redirect("/dashboard")
