@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, session, flash, request
 from pymongo import MongoClient
-from forms import JoinForm, LoginForm, ContentForm
+from forms import JoinForm, LoginForm, ContentForm, SettingsForm
 from werkzeug.security import check_password_hash, generate_password_hash 
 from flask_mail import Mail, Message
 from flask_bootstrap import Bootstrap
@@ -38,10 +38,6 @@ def join():
                 'added': datetime.utcnow(),
             }
             db.users.insert_one(info)
-            # send email confirmation
-            msg = Message("Thanks for joining our app", sender=app.config.get('SENDER'), recipients=[email])
-            msg.body = "testing"
-            mail.send(msg)
             # add info to session
             session["email"] = email
             session["username"] = username
@@ -95,7 +91,7 @@ def dashboard():
         return redirect("/login")
     return render_template('dashboard.html', username=username)
 
-@app.route('/settings')
+@app.route('/settings', methods=['GET', 'POST'])
 def settings():
     form = SettingsForm()
     if request.method == 'POST':
@@ -110,9 +106,9 @@ def settings():
             # return to add content page
             flash("Settings updated")
             return redirect("/dashboard")
-    return render_template('settings.html')
+    return render_template('settings.html', form=form)
 
-@app.route('/add_content')
+@app.route('/add_content', methods=['GET', 'POST'])
 def add_content():
     form = ContentForm()
     if request.method == 'POST':
@@ -134,7 +130,7 @@ def add_content():
             message = '"' + title + '" added successfully'
             flash(message)
             return redirect("/add_content")
-    return render_template('add_content.html')
+    return render_template('add_content.html', form=form)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
