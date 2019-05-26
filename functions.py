@@ -10,7 +10,12 @@ db = client.dandelion
 
 def get_users():
     # get list of usernames with no other info
-    users = db.users.find({}, {"username": 1, "_id": 0})
+    users = db.users.find({
+        # if username key exists
+        "username": { "$exists": True }
+    }, {
+        "username": 1, "_id": 0
+    })
     user_list = []
     for user in users: 
         username = user['username']
@@ -19,7 +24,10 @@ def get_users():
 
 def get_user_emails():
     # get list of emails with no other info
-    emails = db.users.find({}, {"email": 1, "_id": 0})
+    emails = db.users.find({
+        # if email key exists
+        "email": { "$exists": True }
+    }, {"email": 1, "_id": 0})
     email_list = []
     for email in emails: 
         email_address = email['email']

@@ -5,6 +5,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from flask_mail import Mail, Message
 from flask_bootstrap import Bootstrap
 from datetime import datetime
+import logging
+import traceback
 
 app = Flask(__name__)
 app.config.from_pyfile('settings.cfg')
@@ -13,7 +15,7 @@ client = MongoClient(app.config.get('MONGO_URI'))
 db = client.dandelion
 
 mail = Mail(app)
-bootstrap = Bootstrap(app)
+bootstrap = Bootstrap(app) 
 
 @app.route('/')
 def index():
@@ -42,13 +44,15 @@ def join():
             session["email"] = email
             session["username"] = username
             session["learner_name"] = learner_name
+            # log
+            app.logger.info('%s joined successfully', username)
             # flash message
             flash('You have successfully registered and logged in')
             return redirect('/dashboard')
         else:
             # add what happens if it doesn't validate
             for item in form.errors.items():
-                print(item)
+                app.logger.error("item")
     return render_template('join.html', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -66,13 +70,15 @@ def login():
                 if check_password_hash(hashed_password, password):
                     # add user to session and redirect to dashboard
                     session['username'] = username
+                    # log
+                    app.logger.info('%s joined successfully', username)
                     flash('You have successfully logged in')
                     return redirect("/dashboard")
                 else:
                     # add what happens if passwords don't match
                     flash('Please check your password and try again')
                     for item in form.errors.items():
-                        print(item)
+                        app.logger.error("item")
                     return redirect("/login")
     else:
         return redirect('/dashboard')
@@ -80,6 +86,8 @@ def login():
 
 @app.route('/logout')
 def logout():
+    # log
+    app.logger.info('%s logged out successfully', session["username"])
     session.clear()
     return redirect('/login')
 
@@ -87,6 +95,7 @@ def logout():
 def dashboard():
     username = session['username']
     # add what happens if a user ends up here with no username in their session
+    app.logger.info('%s visited the dashboard', session["username"])
     if username == None:
         return redirect("/login")
     return render_template('dashboard.html', username=username)
@@ -109,6 +118,7 @@ def settings():
                 "$set": info
             })
             # return to add content page
+            app.logger.info('%s updated settings', session["username"])
             flash("Settings updated")
             return redirect("/dashboard")
     return render_template('settings.html', form=form)
@@ -133,9 +143,12 @@ def add_content():
             db.content.insert_one(info)
             # return to add content page
             message = '"' + title + '" added successfully'
+            log_message = "%s added " + title
+            app.logger.info(log_message, session["username"])
             flash(message)
             return redirect("/add_content")
     return render_template('add_content.html', form=form)
 
 if __name__ == '__main__':
+    logging.basicConfig(format='%(asctime)s - %(message)s', filename='error.log',level=logging.DEBUG)
     app.run(debug=True, host='0.0.0.0')
